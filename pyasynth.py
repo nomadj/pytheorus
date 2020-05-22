@@ -1,5 +1,8 @@
 #!/usr/local/bin/python3
 
+# PyaSynth 
+
+import os
 import numpy as np
 import simpleaudio as sa
 import object as o
@@ -14,11 +17,23 @@ bpm = 80
 T = (1/bpm)*60
 n_val = {'q': bpm/T}
 sample_rate = 44100
+
 t = np.linspace(0, T, int(T * sample_rate), False)
+
+
+
+#for e in tOld:
+  #  if tOld.index(e) < len(tOld / 2):
+    #    t[e] = 0
+
 pitches = ['a', 'c#', 'e', 'c#']
 
+
+
 voice1 = ['e', 'f', 'g', 'a', 'b', 'c', 'd']
-voice2 = ['c', 'c', 'c', 'c', 'g', 'g', 'g']
+voice2 = ['c', 'c', 'g', 'g']
+voice3 = ['e', 'e', 'b', 'b']
+voice4 = ['g', 'g', 'd', 'd']
 
 i = 1
 
@@ -84,10 +99,12 @@ def voice_two():
 
 
 def voice_three():
+    #bpm /= 2
     play_sine(voice3)
 
 
 def voice_four():
+    #bpm /= 2
     play_sine(voice4)
 
 # def threads(voices):
@@ -96,6 +113,7 @@ def voice_four():
 
 
 def execute():
+    _ = os.system("clear")
     thread_dict = {'vc1': voice_one, 'vc2': voice_two,
                    'vc3': voice_three, 'vc4': voice_four}
     for key, val in thread_dict.items():
@@ -104,3 +122,11 @@ def execute():
 
 
 execute()
+
+newNote = o.Note('c', '2')
+
+
+
+
+# © 2020 Pytheorus at Silicon Lab Chicago
+# Copyleft 2020
