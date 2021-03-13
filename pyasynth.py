@@ -42,6 +42,12 @@ def sine_gen(voice):
 
 def voice_one():
     play_sine(th.voice1)
+    # rest(T)
+    # voices = th.voices()
+    # for i in range(0, 4):
+    #     play_sine(next(voices))
+    f_maj_sc = th.maj_sc('f')
+    play_sine(f_maj_sc)
 
 def voice_two():
     play_sine(th.voice2)
