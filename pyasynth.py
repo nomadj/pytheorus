@@ -46,8 +46,8 @@ def voice_one():
     # voices = th.voices()
     # for i in range(0, 4):
     #     play_sine(next(voices))
-    f_maj_sc = th.maj_sc('f')
-    play_sine(f_maj_sc)
+    #f_maj_sc = th.maj_sc('f')
+    #play_sine(f_maj_sc)
 
 def voice_two():
     play_sine(th.voice2)
@@ -68,11 +68,10 @@ def play_sine(voice):
 
 def execute():
     _ = os.system("clear")
-    thread_dict = {'vc1': voice_one, 'vc2': voice_two,
-                   'vc3': voice_three, 'vc4': voice_four}
-    for key, val in thread_dict.items():
-        key = threading.Thread(target=val)
-        key.start()
+    threads = [voice_one, voice_two, voice_three, voice_four]
+    for voice in threads:
+        thread = threading.Thread(target=voice)
+        thread.start()
 
 execute()
 
