@@ -4,6 +4,10 @@ import threading
 import types
 from time import sleep
 import importlib
+from dotenv import load_dotenv
+import web3_connect as w3
+
+load_dotenv()
 
 def clear():
     os.system('clear')
@@ -123,6 +127,8 @@ def exit_program():
     clear()
 
 def execute():
+    name = w3.contract.functions.name().call()
+    print(f'Connected to {name} contract.')
     menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Exit"]
     menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": exit_program}    
     clear()
