@@ -12,6 +12,6 @@ with open(abi_path) as f:
     data = json.load(f)
     abi = data["abi"]
     f.close()
-contract = web3.eth.contract(address=web3.toChecksumAddress(os.getenv('CONTRACT_ADDRESS')), abi=abi)
+contract = web3.eth.contract(address=web3.to_checksum_address(os.getenv('CONTRACT_ADDRESS')), abi=abi)
 
 
