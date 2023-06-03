@@ -3,11 +3,8 @@ from dotenv import load_dotenv
 import os
 import json
 import getpass
-from cryptography.fernet import Fernet
 from mnemonic import Mnemonic
-import binascii
 from utils import crypt
-import base64
 
 load_dotenv()
 
