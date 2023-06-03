@@ -1,13 +1,10 @@
-# Sample Hardhat Project
+# Pytheorus
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
+Pytheorus is an open-source, token-based, music composition project leveraging the Ethereum blockchain.
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+git clone https://github.com/nomadj/pytheorus.git
+cd pytheorus
+pip install -r requirements.txt
+python exe.py
 ```
