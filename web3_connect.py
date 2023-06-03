@@ -60,7 +60,6 @@ else:
             with open("mnemonic.txt", "r") as f:
                 encrypted_text = json.load(f).encode()
             decrypted_text = crypt.decrypt_string(password, encrypted_text, salt_bytes)
-            print(decrypted_text)
             authenticated = True
             web3.eth.account.enable_unaudited_hdwallet_features()
             wallet = web3.eth.account.from_mnemonic(decrypted_text)
