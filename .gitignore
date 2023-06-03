@@ -8,6 +8,8 @@ coverage.json
 __pycache__
 typechain
 typechain-types
+mnemonic.txt
+salt.txt
 
 #Hardhat files
 cache/
