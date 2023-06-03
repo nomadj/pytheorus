@@ -1,4 +1,3 @@
-#import pyasynth_exp as pya
 import os
 import threading
 import types
@@ -127,10 +126,15 @@ def exit_program():
     clear()
 
 def execute():
+    clear()
     menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Exit"]
     menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": exit_program}    
-    clear()
-    print("Hello. Welcome to PyaSynth. Choose from the options below.\n")
+    connection = w3.web3.is_connected()
+    contract_name = w3.contract.functions.name().call()
+    if connection:
+        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nYour public key is {w3.public_key}.\nChoose from the options below.\n")
+    else:
+        print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
     for option in menu_options:
         print(option)
     prompt = input("\n--> ")
