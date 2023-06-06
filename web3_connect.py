@@ -26,37 +26,35 @@ contract = web3.eth.contract(address=web3.to_checksum_address(os.getenv('CONTRAC
 # Check if launch file exists
 launch_file = 'launch.py'
 if os.path.isfile(launch_file):
-    
-    # Generate a new HD wallet
+    # Get user's handle and set up a new wallet
+    name = input("Hello new user. This is Pyasynth, the original interface for the Pytheorus Composer's Registry.\nPlease enter the screen name you would like to use for publishing -> ")
     account = web3.eth.account.create()
     mnemonic = Mnemonic("english").to_mnemonic(account._private_key)
 
-    # Ask the user to enter a password for encryption
-    password = getpass.getpass(prompt='Enter a password for encryption: ')
+    # Encrypt the mnemonic and persist to a json file
+    password = getpass.getpass(prompt='Enter a password for your wallet -> ')
 
     ciphertext, salt = crypt.encrypt_string(password, mnemonic)
-    with open("mnemonic.txt", "w") as f:
-        json.dump(ciphertext.decode(), f)
-
-    with open("salt.txt", "w") as f:
-        json.dump(salt.hex(), f)
+    settings = {'mnemonic': ciphertext.decode(), 'salt': salt.hex()}
+    data = json.dumps(settings)
+    with open('settings.json', 'w') as f:
+        f.write(data)
     os.system('rm launch.py')
     print("Wallet created.")
 
 else:
     authenticated = False
 
-    print("Welcome back!\n")
-    password = getpass.getpass(prompt='Enter a password to retrieve your mnemonic: ')
-    with open("salt.txt", "r") as f:
-        salt = json.load(f)
-        salt_bytes = bytes.fromhex(salt)
+    print('Welcome back!\n')
+    password = getpass.getpass(prompt='Enter a password to retrieve your wallet -> ')
 
     while not authenticated:
         try:
-            with open("mnemonic.txt", "r") as f:
-                encrypted_text = json.load(f).encode()
-            decrypted_text = crypt.decrypt_string(password, encrypted_text, salt_bytes)
+            with open('settings.json', 'r') as f:
+                settings = json.load(f)
+            salt_bytes = bytes.fromhex(settings['salt'])
+            
+            decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
             authenticated = True
             web3.eth.account.enable_unaudited_hdwallet_features()
             wallet = web3.eth.account.from_mnemonic(decrypted_text)
