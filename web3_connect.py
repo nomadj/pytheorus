@@ -12,6 +12,7 @@ os.system('clear')
 # Connect to node
 web3 = Web3(Web3.HTTPProvider(os.getenv('INFURA_NODE_GOERLI')))
 public_key = ""
+wallet = None
 # Get contract abi
 abi_path = 'artifacts/contracts/Pytheorus.sol/Pytheorus.json'
 abi = ""
@@ -52,8 +53,7 @@ else:
         try:
             with open('settings.json', 'r') as f:
                 settings = json.load(f)
-            salt_bytes = bytes.fromhex(settings['salt'])
-            
+            salt_bytes = bytes.fromhex(settings['salt'])            
             decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
             authenticated = True
             web3.eth.account.enable_unaudited_hdwallet_features()

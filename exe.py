@@ -5,6 +5,8 @@ from time import sleep
 import importlib
 from dotenv import load_dotenv
 import web3_connect as w3
+import requests
+import json
 
 load_dotenv()
 
@@ -124,6 +126,82 @@ def exit_program():
     print("Goodbye!")
     sleep(2)
     clear()
+
+#def ipfs_add(name, image, description):
+def ipfs_add():
+    metadata = {
+        "name": "me",
+        "image": "ipfs://image",
+        "description": "desc",
+        "attributes": [
+            {
+                "trait_type": "skill",
+                "value": "music_composition"
+            },
+            {
+                "trait_type": "skill",
+                "value": "python_programming"
+            },
+            {
+                "trait_type": "skill",
+                "value": "music_theory"
+            },
+            {
+                "trait_type": "skill",
+                "value": "pytheorus"
+            },
+            {
+                "trait_type": "title",
+                "value": "student"
+            }
+        ]
+    }
+
+    json_string = json.dumps(metadata)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "pin": "true",
+        "recursive": "true",
+        "content": json_string
+    }
+
+    infura_url = "https://ipfs.infura.io:5001/api/v0/add"
+    # with open('objects.py', 'r') as f:
+    #     files = {'file': ('objects.py', f)}
+        # response = requests.post(
+        #     'https://ipfs.infura.io:5001/api/v0/add',
+        #     files=files,
+        #     auth=('25IGbomI5oLA5qnyZSRBUVeX9lX','d7f4441f3642d789b942e2016b999d52'))
+
+    files = {'file': ("File Name", json_string)}
+    response = requests.post(
+        'https://ipfs.infura.io:5001/api/v0/add',
+        files=files,
+        auth=('25IGbomI5oLA5qnyZSRBUVeX9lX','d7f4441f3642d789b942e2016b999d52'))    
+    res_dict = dict(response.json())
+    base_url = 'ipfs://'
+    cid = res_dict['Hash']
+    uri = base_url + cid
+    
+    return uri
+
+def mint():
+    uri = ipfs_add()
+    address, key = w3.wallet.address, w3.wallet.key
+    tx = w3.contract.functions.mint(address, uri, uri.replace('ipfs://', ''), 'song_name', 'composer_name').build_transaction({
+        'chainId': 5,
+        'gas': 400000,
+        'nonce': w3.web3.eth.get_transaction_count(address)
+    })
+    signed_tx = w3.web3.eth.account.sign_transaction(tx, private_key=key)
+    w3.web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_receipt = dict(w3.web3.eth.wait_for_transaction_receipt(w3.web3.to_hex(w3.web3.keccak(signed_tx.rawTransaction))))
+
+    return tx_receipt
+    
 
 def execute():
     clear()
