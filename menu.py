@@ -1,17 +1,29 @@
+from web3_connect import *
 import os
 import threading
 import types
 from time import sleep
 import importlib
-from dotenv import load_dotenv
-import web3_connect as w3
-import requests
-import json
-
-load_dotenv()
 
 def clear():
     os.system('clear')
+
+def main_menu():
+    clear()
+    menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Exit"]
+    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": exit_program}    
+    connection = web3.is_connected()
+    contract_name = contract.functions.name().call()
+    if connection:
+        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nYour public key is {public_key}.\nChoose from the options below.\n")
+    else:
+        print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
+    for option in menu_options:
+        print(option)
+    prompt = input("\n--> ")
+    while prompt not in menu_actions.keys():
+        prompt = input("Invalid response. Type the number of an action\n--> ")
+    menu_actions[prompt]()
 
 def create_song():
     clear()
@@ -27,7 +39,7 @@ def create_song():
         elif any(character in song_name for character in special_chars):
             song_name = input("Alphanumeric and underscore only. No spaces. Try again.\n--> ")
     if song_name == "":
-        execute()
+        main_menu()
         return
     song_path = "songs/" + song_name.strip() + ".py"
     code = """from . import utilities
@@ -52,7 +64,7 @@ voices = [voice_one, voice_two]
         f.close()
     #os.system(f'nano songs/new_song_{i}.py')
     os.system(f'nano {song_path}')
-    execute()
+    main_menu()
 
 def edit_song():
     clear()
@@ -63,15 +75,15 @@ def edit_song():
         print(f"{index}. {song}")        
     song_name = input("\n--> ")
     if song_name == "":
-        execute()
+        main_menu()
         return
     while song_name not in songs.keys():
         song_name = input("That song does not exist. Type the number of the song\n--> ")
         if song_name == "":
-            execute()
+            main_menu()
             return
     os.system(f'nano songs/{songs[song_name]}.py')
-    execute()
+    main_menu()
 
 def play_song():
     songs = [song.removesuffix('.py') for song in os.listdir('songs') if song.removesuffix('.py') not in ['utilities', '__pycache__']]
@@ -93,7 +105,7 @@ def play_song():
     song.start_event.set()
     for voice in voices:
         thread.join()
-    execute()
+    main_menu()
 
 def delete_song():
     clear()
@@ -104,12 +116,12 @@ def delete_song():
         print(f"{index}. {song}")        
     song_name = input("\n--> ")
     if song_name == "":
-        execute()
+        main_menu()
         return
     while song_name not in songs.keys():
         song_name = input("That song does not exist. Enter the number of the song.\n--> ")
         if song_name == "":
-            execute()
+            main_menu()
             return
     safeguard = input(f"Are you sure you want to delete {songs[song_name]}? Type yes to delete.\n--> ")
     if safeguard.lower() == 'yes':
@@ -125,113 +137,4 @@ def exit_program():
     clear()
     print("Goodbye!")
     sleep(2)
-    clear()
-
-#def ipfs_add(name, image, description):
-def ipfs_add():
-    metadata = {
-        "name": "me",
-        "image": "ipfs://image",
-        "description": "desc",
-        "attributes": [
-            {
-                "trait_type": "skill",
-                "value": "music_composition"
-            },
-            {
-                "trait_type": "skill",
-                "value": "python_programming"
-            },
-            {
-                "trait_type": "skill",
-                "value": "music_theory"
-            },
-            {
-                "trait_type": "skill",
-                "value": "pytheorus"
-            },
-            {
-                "trait_type": "title",
-                "value": "student"
-            }
-        ]
-    }
-
-    json_string = json.dumps(metadata)
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-    data = {
-        "pin": "true",
-        "recursive": "true",
-        "content": json_string
-    }
-
-    infura_url = "https://ipfs.infura.io:5001/api/v0/add"
-    # with open('objects.py', 'r') as f:
-    #     files = {'file': ('objects.py', f)}
-        # response = requests.post(
-        #     'https://ipfs.infura.io:5001/api/v0/add',
-        #     files=files,
-        #     auth=('25IGbomI5oLA5qnyZSRBUVeX9lX','d7f4441f3642d789b942e2016b999d52'))
-
-    files = {'file': ("File Name", json_string)}
-    response = requests.post(
-        'https://ipfs.infura.io:5001/api/v0/add',
-        files=files,
-        auth=('25IGbomI5oLA5qnyZSRBUVeX9lX','d7f4441f3642d789b942e2016b999d52'))    
-    res_dict = dict(response.json())
-    base_url = 'ipfs://'
-    cid = res_dict['Hash']
-    uri = base_url + cid
-    
-    return uri
-
-def mint():
-    uri = ipfs_add()
-    address, key = w3.wallet.address, w3.wallet.key
-    tx = w3.contract.functions.mint(address, uri, uri.replace('ipfs://', ''), 'song_name', 'composer_name').build_transaction({
-        'chainId': 5,
-        'gas': 400000,
-        'nonce': w3.web3.eth.get_transaction_count(address)
-    })
-    signed_tx = w3.web3.eth.account.sign_transaction(tx, private_key=key)
-    w3.web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-    tx_receipt = dict(w3.web3.eth.wait_for_transaction_receipt(w3.web3.to_hex(w3.web3.keccak(signed_tx.rawTransaction))))
-
-    return tx_receipt
-    
-
-def execute():
-    clear()
-    menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Exit"]
-    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": exit_program}    
-    connection = w3.web3.is_connected()
-    contract_name = w3.contract.functions.name().call()
-    if connection:
-        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nYour public key is {w3.public_key}.\nChoose from the options below.\n")
-    else:
-        print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
-    for option in menu_options:
-        print(option)
-    prompt = input("\n--> ")
-    while prompt not in menu_actions.keys():
-        prompt = input("Invalid response. Type the number of an action\n--> ")
-    menu_actions[prompt]()
-
-### SCRATCH ###
-
-# def execute():
-#     definitions = globals()
-#     all_functions = [name for name, obj in definitions.items() if isinstance(obj, types.FunctionType)]
-#     print(*all_functions)
-# def execute():
-#     definitions = globals()
-#     for definition in definitions.items():
-#         if callable(eval(definition[0])):
-#             print(definition[0])
-
-if __name__ == "__main__":
-    execute()
-    
+    clear()    
