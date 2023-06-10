@@ -11,7 +11,7 @@ def clear():
 def main_menu():
     clear()
     menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Mint an NFT", "6. Exit"]
-    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": web3_init, "6": exit_program}    
+    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": wallet_init, "6": exit_program}    
     connection = web3.is_connected()
     contract_name = contract.functions.name().call()
     if connection:
@@ -138,6 +138,52 @@ def delete_song():
         delete_song()
     else:
         delete_song()
+
+def wallet_init():
+    os.system('clear')
+    wallet = None
+    # web3_init.wallet = None
+    # Check if launch file exists
+    launch_file = 'launch.py'
+    if os.path.isfile(launch_file):
+        # Get user's handle and set up a new wallet
+        name = input("Hello new user. This is Pyasynth, the original interface for the Pytheorus Composer's Registry.\nPlease enter the screen name you would like to use for publishing -> ")
+        account = web3.eth.account.create()
+        mnemonic = Mnemonic("english").to_mnemonic(account._private_key)
+
+        # Encrypt the mnemonic and persist to a json file
+        password = getpass.getpass(prompt='Enter a password for your wallet -> ')
+
+        ciphertext, salt = crypt.encrypt_string(password, mnemonic)
+        settings = {'mnemonic': ciphertext.decode(), 'salt': salt.hex()}
+        data = json.dumps(settings)
+        with open('settings.json', 'w') as f:
+            f.write(data)
+        os.system('rm launch.py')
+        print("Wallet created.")
+        wallet_init()
+    else:
+        authenticated = False
+
+        print('Welcome back!\n')
+        password = getpass.getpass(prompt='Enter a password to retrieve your wallet -> ')
+
+        while not authenticated:
+            try:
+                with open('settings.json', 'r') as f:
+                    settings = json.load(f)
+                salt_bytes = bytes.fromhex(settings['salt'])            
+                decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
+                authenticated = True
+                web3.eth.account.enable_unaudited_hdwallet_features()
+                wallet = web3.eth.account.from_mnemonic(decrypted_text)
+                public_key = wallet.address
+                print(f"Your public key {public_key} has a balance of {web3.from_wei(web3.eth.get_balance(public_key), 'ether')} ETH")
+                sleep(4)
+                main_menu()
+                return
+            except Exception:
+                password = getpass.getpass(prompt='Nope, try again -> ')
 
 def exit_program():
     clear()
