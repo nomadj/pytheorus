@@ -1,15 +1,9 @@
 import os
-# import threading
-# import types
-# from time import sleep
-# import importlib
-# from dotenv import load_dotenv
-# from web3_connect import *
-# import requests
-# import json
 from wallet import *
 import menu
 from mint import *
+from debug import check_file_type
+# from web3_connect import web3_init
 
 load_dotenv()
 
@@ -17,24 +11,12 @@ def main():
     menu.main_menu()
 
 def debug():
-    pass
-    # event_filter = contract.events.Transfer.create_filter(fromBlock=0, toBlock='latest')
-    # events = event_filter.get_all_entries()
-    # print(events)
-    # for e in events:
-    #     print(e)
-
-### SCRATCH ###
-
-# def execute():
-#     definitions = globals()
-#     all_functions = [name for name, obj in definitions.items() if isinstance(obj, types.FunctionType)]
-#     print(*all_functions)
-# def execute():
-#     definitions = globals()
-#     for definition in definitions.items():
-#         if callable(eval(definition[0])):
-#             print(definition[0])
+    try:
+        file_path = 'images/tambora.png'
+        file_type = check_file_type(file_path)
+        print(f"The file {os.path.basename(file_path)} is of type {file_type}")
+    except ValueError as e:
+        print(e)
 
 if __name__ == "__main__":
     main()

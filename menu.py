@@ -10,12 +10,12 @@ def clear():
 
 def main_menu():
     clear()
-    menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Exit"]
-    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": exit_program}    
+    menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Mint an NFT", "6. Exit"]
+    menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": web3_init, "6": exit_program}    
     connection = web3.is_connected()
     contract_name = contract.functions.name().call()
     if connection:
-        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nYour public key is {public_key}.\nChoose from the options below.\n")
+        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nChoose from the options below.\n")
     else:
         print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
     for option in menu_options:
@@ -62,7 +62,7 @@ voices = [voice_one, voice_two]
     with open(song_path, 'w') as f:
         f.write(code)
         f.close()
-    #os.system(f'nano songs/new_song_{i}.py')
+
     os.system(f'nano {song_path}')
     main_menu()
 
@@ -90,12 +90,18 @@ def play_song():
     songs = {str(i): song for i, song in enumerate(songs, start=1)}
 
     clear()
-    print("Which song would you like to play?\n")
+    print("Which song would you like to play? Hit enter to go back.\n")
     for index, song in songs.items():
         print(f"{index}. {song}")
     prompt = input("\n--> ")
+    if prompt == '':
+        main_menu()
+        return
     while prompt not in songs.keys():
         prompt = input("Try again. Type the number of the song to be played --> ")
+        if prompt == '':
+            main_menu()
+            return
     songs_package = 'songs'
     song = importlib.import_module("." + songs[prompt], package=songs_package)
     voices = song.voices
