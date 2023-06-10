@@ -62,7 +62,7 @@ def ipfs_add():
     
     return uri
 
-def mint():
+def mint(wallet):
     uri = ipfs_add()
     address, key = wallet.address, wallet.key
     tx = contract.functions.mint(address, uri, uri.replace('ipfs://', ''), 'song_name', 'composer_name').build_transaction({
