@@ -22,6 +22,6 @@ def debug():
 if __name__ == "__main__":
     # main()
     # debug()
-    req_app()
+    # req_app()
     
     

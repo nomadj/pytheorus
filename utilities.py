@@ -24,13 +24,13 @@ def wallet():
             f.write(data)
         os.system('rm launch.py')
         print("Wallet created.")
-        mint_song()
     else:
         authenticated = False
         password = getpass.getpass(prompt='Enter your wallet password --> ')
+        wallet_file = 'imported_wallet.json' if os.isfile('imported_wallet.json') else 'settings.json'
         while not authenticated:
             try:
-                with open('settings.json', 'r') as f:
+                with open(wallet_file, 'r') as f:
                     settings = json.load(f)
                 salt_bytes = bytes.fromhex(settings['salt'])            
                 decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
@@ -42,6 +42,21 @@ def wallet():
             wallet = web3.eth.account.from_mnemonic(decrypted_text)
 
             return wallet
+
+def import_wallet(key, method=None):
+    account = web3.eth.from_key(key)
+    mnemonic = Mnemonic("english").to_mnemonic(account._private_key)
+
+    # Encrypt the mnemonic and persist to a json file
+    password = getpass.getpass(prompt='Enter a password for your wallet -> ')
+
+    ciphertext, salt = crypt.encrypt_string(password, mnemonic)
+    settings = {'mnemonic': ciphertext.decode(), 'salt': salt.hex()}
+    data = json.dumps(settings)
+    with open('imported_wallet.json', 'w') as f:
+        f.write(data)
+
+    print("Wallet imported.")
 
 def check_file_type(file_path):
     file_type = mimetypes.guess_type(file_path)[0]
