@@ -1,9 +1,18 @@
-import mimetypes
+from contract_methods import *
+from utilities import *
 
-def check_file_type(file_path):
-    file_type = mimetypes.guess_type(file_path)[0]
+def req_app():
+    wallio = wallet()
+    receipt = request_approval(wallio, "Johnny")
+    owner = get_owner()
+    if receipt['status'] == 0:
+        print("Something went wrong")
+        get_error_message(receipt['transactionHash'])    
+    else:
+        print(f"Success! Waiting for approval from contract owner at {owner}")            
+    
 
-    if file_type not in ["image/png", "image/jpeg", "model/gltf-binary"]:
-        raise ValueError("Invalid file type. The file must be in PNG, JPG, or GLB format.")
-    return file_type
+
+
+
 

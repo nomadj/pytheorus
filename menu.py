@@ -5,18 +5,24 @@ import types
 from time import sleep
 import importlib
 from mint import mint
+import utilities
 
 def clear():
     os.system('clear')
 
 def main_menu():
     clear()
+    wallet = utilities.wallet()
+    clear()
     menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Mint an NFT", "6. Exit"]
     menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": mint_song, "6": exit_program}    
     connection = web3.is_connected()
     contract_name = contract.functions.name().call()
     if connection:
-        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.\nChoose from the options below.\n")
+        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.")
+        print("Wallet address:", wallet.address)
+        print("Balance:", web3.eth.get_balance(wallet.address))
+        print("\nChoose from the options below.\n")
     else:
         print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
     for option in menu_options:

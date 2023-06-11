@@ -2,7 +2,8 @@ import os
 from wallet import *
 import menu
 from mint import *
-from debug import check_file_type
+from debug import *
+import utilities
 # from web3_connect import web3_init
 
 load_dotenv()
@@ -19,6 +20,8 @@ def debug():
         print(e)
 
 if __name__ == "__main__":
-    main()
+    # main()
     # debug()
+    req_app()
+    
     
