@@ -219,6 +219,9 @@ def mint_song():
         else:
             mint_song()
 
+def import_existing_wallet(key):
+    utilities.import_wallet(key, method=main_menu)
+
 def exit_program():
     clear()
     print("Goodbye!")

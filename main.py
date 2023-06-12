@@ -20,7 +20,7 @@ def debug():
         print(e)
 
 if __name__ == "__main__":
-    # main()
+    main()
     # debug()
     # req_app()
     
