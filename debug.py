@@ -3,7 +3,7 @@ from utilities import *
 
 def req_app():
     wallio = wallet()
-    receipt = request_approval(wallio, "Johnny")
+    receipt = request_approval(wallio, "Bob")
     owner = get_owner()
     if receipt['status'] == 0:
         print("Something went wrong")

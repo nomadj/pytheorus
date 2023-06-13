@@ -211,7 +211,14 @@ def mint_song():
             receipt = mint(wallet)
             tx_hash = web3.to_hex(receipt[0]['transactionHash'])
             block = receipt[0]['blockNumber']
-            print(f"\nSuccess! {songs[song_name]} has been minted \nBlock: {block}\nTransaction hash: {tx_hash}\n")
+
+            if receipt[0]['status'] != 0:
+                print(f"\nSuccess! {songs[song_name]} has been minted \nBlock: {block}\nTransaction hash: {tx_hash}\n")
+            else:
+                print("You are not authorized to make this transaction. Transaction reverted.")
+                sleep(2)
+                main_menu()
+                return
             prompt = input("Would you like to mint another? Input 'yes' or 'no'\n--> ")
             while prompt not in ['yes', 'no']:
                 prompt = input("Try again. Type 'yes' or 'no' then hit enter\n--> ")

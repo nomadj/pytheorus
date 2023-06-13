@@ -27,5 +27,6 @@ if __name__ == "__main__":
     # req_app()
     # a = get_pending_students()
     # print(a)
+    # receipt = approve_or_deny_student(5, True)
     
     

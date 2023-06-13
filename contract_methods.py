@@ -29,3 +29,25 @@ def get_pending_students():
     })
 
     return pending_students
+
+def approve_or_deny_student(index, decision):
+    wallet = utilities.wallet()
+    tx = contract.functions.approveOrDenyStudent(index, decision).build_transaction({
+        'from': wallet.address,
+        'chainId': 5,
+        'gas': 200000,
+        'nonce': web3.eth.get_transaction_count(wallet.address)
+    })
+
+    gas = web3.eth.estimate_gas(tx)
+    print("Gas Estimate:", gas)
+    signed_tx = web3.eth.account.sign_transaction(tx, private_key=wallet.key)
+    raw_tx = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_receipt = dict(web3.eth.wait_for_transaction_receipt(web3.to_hex(web3.keccak(signed_tx.rawTransaction))))
+    if tx_receipt['status'] != 0:
+        print("Success! The student has been accepted.")
+    else:
+        print("Transaction failed with status 0.")
+
+    return tx_receipt
+    
