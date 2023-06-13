@@ -41,7 +41,6 @@ def wallet():
             except Exception:
                 password = getpass.getpass(prompt='Nope, try again -> ')
             # decrypted_text = binascii.hexlify(decrypted_text.encode)
-            print("KEY:", decrypted_text, type(decrypted_text))
             web3.eth.account.enable_unaudited_hdwallet_features()
             wallet = web3.eth.account.from_key(decrypted_text) if os.path.isfile('imported_wallet.json') else web3.eth.account.from_mnemonic(decrypted_text)
             # wallet = web3.eth.account.from_mnemonic(decrypted_text)

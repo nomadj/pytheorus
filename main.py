@@ -4,6 +4,8 @@ import menu
 from mint import *
 from debug import *
 import utilities
+from contract_methods import *
+
 # from web3_connect import web3_init
 
 load_dotenv()
@@ -23,5 +25,7 @@ if __name__ == "__main__":
     main()
     # debug()
     # req_app()
+    # a = get_pending_students()
+    # print(a)
     
     

@@ -1,4 +1,5 @@
 from web3_connect import *
+import utilities
 
 def request_approval(wallet, name):
     address, key = wallet.address, wallet.key
@@ -19,3 +20,12 @@ def get_owner():
     owner = contract.functions.owner().call()
 
     return owner
+
+def get_pending_students():
+    wallet = utilities.wallet()
+    addr = '0x211108b43AF00993274668676afa7032ac66D88E'
+    pending_students = contract.functions.getPendingStudents().call({
+        'from': wallet.address
+    })
+
+    return pending_students
