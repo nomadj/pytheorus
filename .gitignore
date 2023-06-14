@@ -12,6 +12,7 @@ mnemonic.txt
 salt.txt
 settings.json
 imported_wallet.json
+mported_wallet.json
 debug.py
 
 #Hardhat files
