@@ -4,7 +4,7 @@ import threading
 import types
 from time import sleep
 import importlib
-from mint import mint
+from mint import mint_token
 import utilities
 
 def clear():
@@ -12,16 +12,16 @@ def clear():
 
 def main_menu():
     clear()
-    wallet = utilities.wallet()
+    # wallet = utilities.wallet()
     clear()
     menu_options = ["1. Create a new song", "2. Edit an existing song", "3. Play a song", "4. Delete a song", "5. Mint an NFT", "6. Exit"]
     menu_actions = {"1": create_song, "2": edit_song, "3": play_song, "4": delete_song, "5": mint_song, "6": exit_program}    
     connection = web3.is_connected()
     contract_name = contract.functions.name().call()
     if connection:
-        print(f"Hello. Welcome to PyaSynth. You are connected to the {contract_name} contract.")
-        print("Wallet address:", wallet.address)
-        print("Balance:", web3.eth.get_balance(wallet.address))
+        print(f"You are connected to the {contract_name} contract.")
+        print("Wallet address:", web3.default_account)
+        print("Balance:", web3.eth.get_balance(web3.default_account))
         print("\nChoose from the options below.\n")
     else:
         print("Hello. Welcome to PyaSynth. You are not connected to an Ethereum node.\nChoose from the options below.\n")
@@ -172,7 +172,6 @@ def mint_song():
         mint_song()
     else:
         authenticated = False
-        print('Welcome back!\n')
         songs = [song.removesuffix('.py') for song in os.listdir('songs') if song.removesuffix('.py') not in ['utilities', '__pycache__']]
         songs = {str(i): song for i, song in enumerate(songs, start=1)}
         print("Which song would you like to mint? Hit enter to go back.\n")
@@ -189,18 +188,19 @@ def mint_song():
                 return
         safeguard = input(f"Are you sure you want to mint {songs[song_name]}? Input 'yes' to mint.\n--> ")
         if safeguard.lower() == 'yes':
-            password = getpass.getpass(prompt='Enter your wallet password --> ')
-            while not authenticated:
-                try:
-                    with open('settings.json', 'r') as f:
-                        settings = json.load(f)
-                    salt_bytes = bytes.fromhex(settings['salt'])            
-                    decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
-                    authenticated = True
-                except Exception:
-                    password = getpass.getpass(prompt='Nope, try again -> ')
-            web3.eth.account.enable_unaudited_hdwallet_features()
-            wallet = web3.eth.account.from_mnemonic(decrypted_text)
+            # password = getpass.getpass(prompt='Enter your wallet password --> ')
+            # while not authenticated:
+            #     try:
+            #         with open('settings.json', 'r') as f:
+            #             settings = json.load(f)
+            #         salt_bytes = bytes.fromhex(settings['salt'])            
+            #         decrypted_text = crypt.decrypt_string(password, settings['mnemonic'].encode(), salt_bytes)
+            #         authenticated = True
+            #     except Exception:
+            #         password = getpass.getpass(prompt='Nope, try again -> ')
+            # web3.eth.account.enable_unaudited_hdwallet_features()
+            # wallet = web3.eth.account.from_mnemonic(decrypted_text)
+            wallet = utilities.wallet()
             public_key = wallet.address
             balance = web3.from_wei(web3.eth.get_balance(public_key), 'ether')
             os.system('clear')
@@ -208,11 +208,17 @@ def mint_song():
             print("Wallet address:", public_key)
             print("Balance:", balance)
             print("\nMinting", songs[song_name])
-            receipt = mint(wallet)
-            tx_hash = web3.to_hex(receipt[0]['transactionHash'])
-            block = receipt[0]['blockNumber']
+            try:
+                receipt = mint_token(wallet)
+            except Exception as e:
+                print(e)
+                sleep(2)
+                main_menu()
+                return
+            tx_hash = web3.to_hex(receipt['transactionHash'])
+            block = receipt['blockNumber']
 
-            if receipt[0]['status'] != 0:
+            if receipt['status'] != 0:
                 print(f"\nSuccess! {songs[song_name]} has been minted \nBlock: {block}\nTransaction hash: {tx_hash}\n")
             else:
                 print("You are not authorized to make this transaction. Transaction reverted.")

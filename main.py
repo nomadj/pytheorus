@@ -11,6 +11,8 @@ from contract_methods import *
 load_dotenv()
 
 def main():
+    print("Welcome to Pytheorus.")
+    web3.default_account = wallet().address
     menu.main_menu()
 
 def debug():
@@ -27,6 +29,8 @@ if __name__ == "__main__":
     # req_app()
     # a = get_pending_students()
     # print(a)
-    # receipt = approve_or_deny_student(5, True)
+    # receipt = approve_or_deny_student(0, True)
+    # get_students()
+    
     
     

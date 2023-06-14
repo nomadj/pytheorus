@@ -62,16 +62,25 @@ def ipfs_add():
     
     return uri
 
-def mint(wallet):
+def mint_token(wallet):
     uri = ipfs_add()
-    address, key = wallet.address, wallet.key
-    tx = contract.functions.mint(address, uri, uri.replace('ipfs://', ''), 'song_name', 'composer_name').build_transaction({
+    address, key = web3.to_checksum_address(wallet.address), wallet.key
+    print(address)
+    song_name = 'song_name'
+    composer_name = 'composer_name'
+    
+    tx = contract.functions.mint(address, uri, song_name, composer_name).build_transaction({
+        'from': address,
         'chainId': 5,
         'gas': 400000,
         'nonce': web3.eth.get_transaction_count(address)
     })
+    
+
+    gas = web3.eth.estimate_gas(tx)
+    print("Gas: ", gas)
     signed_tx = web3.eth.account.sign_transaction(tx, private_key=key)
     raw_tx = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
     tx_receipt = dict(web3.eth.wait_for_transaction_receipt(web3.to_hex(web3.keccak(signed_tx.rawTransaction))))
 
-    return tx_receipt, raw_tx
+    return tx_receipt

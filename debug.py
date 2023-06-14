@@ -9,7 +9,12 @@ def req_app():
         print("Something went wrong")
         get_error_message(receipt['transactionHash'])    
     else:
-        print(f"Success! Waiting for approval from contract owner at {owner}")            
+        print(f"Success! Waiting for approval from contract owner at {owner}")
+
+# def get_students():
+#     wallio = wallet()
+#     students = contract.functions.getStudents().call()
+#     print(students)
     
 
 

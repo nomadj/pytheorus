@@ -8,8 +8,8 @@ contract Pytheorus is ERC721, Ownable {
 	using Strings for uint256;
 
 	uint256 private _tokenId;
-	bool private _requestsEnabled;
-	Token[] private _tokens;
+	bool public _requestsEnabled;
+	mapping (uint256 => Token) private _tokens;
 	Student[] private _pending;
 	Student[] private _students;
 	mapping (address => bool) private _accepted;
@@ -27,7 +27,6 @@ contract Pytheorus is ERC721, Ownable {
 		uint256 blockNumber;
 		uint256 timeStamp;
  		string uri;
-		string cid;
 		uint256 tokenId;
 	}
 
@@ -60,11 +59,12 @@ contract Pytheorus is ERC721, Ownable {
 		_requestsEnabled = !_requestsEnabled;
 	}
 
-	function mint(address to_, string memory uri_, string memory cid_, string memory name_, string memory composer_) public {
+	function mint(address to_, string memory uri_, string memory name_, string memory composer_) public {
 		require(_accepted[_msgSender()], "You are not authorized for this operation.");
 		_mint(to_, _tokenId);
 		_setTokenURI(_tokenId, uri_);
-		_tokens[_tokenId] = Token({ name: name_, composer: composer_, blockNumber: block.number, timeStamp: block.timestamp, uri: uri_, cid: cid_, tokenId: _tokenId});
+		Token memory token = Token({ name: name_, composer: composer_, blockNumber: block.number, timeStamp: block.timestamp, uri: uri_, tokenId: _tokenId});
+		_tokens[_tokenId] = token;
 		_tokenId++;
 	}
 
@@ -86,8 +86,8 @@ contract Pytheorus is ERC721, Ownable {
 		return _students;
 	}
 
-	function getTokens() public view returns (Token[] memory) {
-		return _tokens;
+	function getToken(uint256 tokenId_) public view returns (Token memory) {
+		return _tokens[tokenId_];
 	}
 
 	function approveOrDenyStudent(uint256 index, bool decision) public onlyOwner {
